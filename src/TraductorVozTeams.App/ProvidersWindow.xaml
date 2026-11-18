@@ -1,0 +1,62 @@
+<Window x:Class="TraductorVozTeams.App.ProvidersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Proveedores y credenciales"
+        Width="820" Height="620" MinWidth="700" MinHeight="500"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="TestButton" Content="Probar conexión" Click="OnTest" />
+            <Button x:Name="SaveButton" Content="Guardar" Click="OnSave" FontWeight="Bold" />
+            <Button Content="Cerrar" Click="OnClose" IsCancel="True" />
+        </StackPanel>
+        <TextBlock DockPanel.Dock="Bottom" x:Name="MessageText" Margin="4" TextWrapping="Wrap" />
+
+        <DockPanel DockPanel.Dock="Left" Width="220" Margin="0,0,10,0">
+            <TabControl x:Name="ProviderTabs" DockPanel.Dock="Top" SelectionChanged="OnProviderTabChanged">
+                <TabItem Header="Speech y otros" />
+                <TabItem x:Name="GptTab" Header="GPT Realtime Translate" />
+            </TabControl>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+                <Button Content="Nuevo" Click="OnNew" MinWidth="60" />
+                <Button Content="Eliminar perfil" Click="OnDeleteProfile" />
+            </StackPanel>
+            <TextBlock DockPanel.Dock="Top" Text="Perfiles" FontWeight="SemiBold" Margin="4" />
+            <ListBox x:Name="ProfileList" Margin="4" SelectionChanged="OnProfileSelected" />
+        </DockPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Nombre del perfil:" VerticalAlignment="Center" />
+                    <TextBox x:Name="NameBox" Grid.Column="1" />
+                    <TextBlock Grid.Row="1" Text="Proveedor:" VerticalAlignment="Center" />
+                    <ComboBox x:Name="ProviderCombo" Grid.Row="1" Grid.Column="1" DisplayMemberPath="DisplayName"
+                              SelectionChanged="OnProviderTypeChanged" />
+                </Grid>
+                <TextBlock x:Name="AvailabilityText" Margin="4" TextWrapping="Wrap" Foreground="DarkOrange" />
+                <Grid x:Name="FieldsGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+                <StackPanel x:Name="GptVerificationPanel" Visibility="Collapsed">
+                    <TextBlock x:Name="GptVerificationText" Margin="4" TextWrapping="Wrap" />
+                    <Button x:Name="VerifyGptButton" Content="Verificar voz con muestras integradas…" Click="OnVerifyGpt" HorizontalAlignment="Left" />
+                </StackPanel>
+                <TextBlock Margin="4,12,4,4" TextWrapping="Wrap" Foreground="DimGray"
+                           Text="Las credenciales se cifran con Windows DPAPI para tu usuario y se guardan fuera del ejecutable. Nunca se muestran ni se escriben en settings.json ni en los registros." />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

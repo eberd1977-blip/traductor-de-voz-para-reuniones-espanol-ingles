@@ -1,0 +1,22 @@
+# Compilación
+bin/
+obj/
+publish/
+dist/
+*.user
+*.suo
+.vs/
+TestResults/
+
+# Nunca versionar configuración local ni credenciales
+.env
+.env.*
+settings.json
+secrets/
+!/src/TraductorVozTeams.Core/Secrets/
+/src/TraductorVozTeams.Core/Secrets/*
+!/src/TraductorVozTeams.Core/Secrets/DpapiSecretStore.cs
+*.bin
+*.pfx
+*.key
+appsettings.*.local.json

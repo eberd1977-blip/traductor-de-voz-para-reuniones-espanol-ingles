@@ -1,0 +1,244 @@
+<Window x:Class="TraductorVozTeams.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Traductor de voz para reuniones (español ⇄ inglés)"
+        Width="1200" Height="780" MinWidth="520" MinHeight="400"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="MinHeight" Value="26" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="MinHeight" Value="24" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="8" SizeChanged="OnLayoutSizeChanged" UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollViewer x:Name="ConfigurationScroll" MaxHeight="450"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel>
+            <GroupBox Header="Proveedor de traducción" Padding="4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Mi voz → reunión:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                    <ComboBox x:Name="OutgoingProfileCombo" Grid.Column="1" SelectionChanged="OnOutgoingProfileChanged"
+                              ToolTip="Proveedor para traducir tu voz. Solo puede cambiarse con esta dirección detenida." />
+                    <TextBlock Grid.Row="1" Text="Reunión → mis auriculares:" VerticalAlignment="Center" Margin="0,4,6,0" />
+                    <ComboBox x:Name="IncomingProfileCombo" Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" SelectionChanged="OnIncomingProfileChanged"
+                              ToolTip="Proveedor para traducir el audio de la reunión. Solo puede cambiarse con esta dirección detenida." />
+                    <Button x:Name="ConfigureProvidersButton" Grid.Column="2" Grid.RowSpan="2" Margin="6,0,0,0" VerticalAlignment="Center"
+                            Content="Configurar proveedores y credenciales…" Click="OnConfigureProviders" />
+                </Grid>
+            </GroupBox>
+
+            <Grid Margin="0,6,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition x:Name="DirectionGap" Width="0" />
+                    <ColumnDefinition x:Name="DirectionSecondColumn" Width="0" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <GroupBox x:Name="OutgoingPanel" Header="Mi voz → reunión (español → inglés)" Padding="4" VerticalAlignment="Top">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="138" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Micrófono físico (español):" VerticalAlignment="Center" TextWrapping="Wrap" />
+                            <ComboBox x:Name="InputCombo" Grid.Column="1" />
+                            <ProgressBar x:Name="LevelBar" Grid.Column="2" Height="14" Margin="4" Maximum="1" ToolTip="Nivel del micrófono" />
+
+                            <TextBlock Grid.Row="1" Text="Salida hacia la reunión:" VerticalAlignment="Center" />
+                            <ComboBox x:Name="TeamsOutputCombo" Grid.Row="1" Grid.Column="1"
+                                      ToolTip="Extremo de reproducción del cable virtual de esta dirección. En la reunión elige su extremo de grabación como micrófono." />
+                            <Slider x:Name="TeamsVolumeSlider" Grid.Row="1" Grid.Column="2" Minimum="0" Maximum="1" Margin="4" VerticalAlignment="Center"
+                                    ValueChanged="OnVolumeChanged" ToolTip="Volumen hacia la reunión" />
+
+                            <CheckBox x:Name="MonitorCheck" Grid.Row="2" Content="Escuchar traducción en:" VerticalAlignment="Center" />
+                            <ComboBox x:Name="MonitorCombo" Grid.Row="2" Grid.Column="1"
+                                      ToolTip="Auriculares. No puede ser la misma salida hacia la reunión ni un cable virtual." />
+                            <Slider x:Name="MonitorVolumeSlider" Grid.Row="2" Grid.Column="2" Minimum="0" Maximum="1" Margin="4" VerticalAlignment="Center"
+                                    ValueChanged="OnVolumeChanged" ToolTip="Volumen del monitor" />
+
+                            <TextBlock Grid.Row="3" Text="Idioma de origen:" VerticalAlignment="Center" />
+                            <ComboBox x:Name="SourceLanguageCombo" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" IsEditable="True"
+                                      ToolTip="Variante de español que hablas (código BCP-47)." />
+
+                            <TextBlock Grid.Row="4" Text="Voz en inglés:" VerticalAlignment="Center" />
+                            <ComboBox x:Name="VoiceCombo" Grid.Row="4" Grid.Column="1" SelectionChanged="OnVoiceChanged"
+                                      MaxDropDownHeight="420" IsTextSearchEnabled="True"
+                                      ToolTip="Voz con la que la reunión escuchará la traducción. Escribe las primeras letras para buscar." />
+                            <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal">
+                                <Button x:Name="PreviewVoiceButton" Content="▶ Probar" Click="OnPreviewVoice"
+                                        ToolTip="Reproduce una frase corta en 'Escuchar traducción en' (nunca en la salida hacia la reunión). Se factura como síntesis de voz." />
+                                <Button x:Name="RefreshVoicesButton" Content="↻ Voces" Click="OnRefreshVoices" ToolTip="Volver a consultar las voces en inglés"
+                                        AutomationProperties.Name="Actualizar voces en inglés" />
+                            </StackPanel>
+                            <TextBlock x:Name="VoiceStatusText" Grid.Row="5" Grid.ColumnSpan="3" Margin="4,2" Foreground="DimGray" TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="6" Grid.ColumnSpan="3" Margin="4" TextWrapping="Wrap" Foreground="DimGray"
+                                       Text="La reunión recibe solo el inglés sintetizado; tu voz original solo se envía al proveedor. En Teams, Zoom o Meet elige como micrófono el extremo de grabación de este cable." />
+                            <TextBlock x:Name="RoutingText" Grid.Row="7" Grid.ColumnSpan="3" TextWrapping="Wrap" />
+                        </Grid>
+
+                        <WrapPanel Margin="0,2,0,0">
+                            <Button x:Name="StartButton" Content="▶ Iniciar" Click="OnStart" FontWeight="Bold" />
+                            <Button x:Name="StopButton" Content="■ Detener" Click="OnStop" IsEnabled="False" />
+                            <TextBlock x:Name="StatusText" VerticalAlignment="Center" Margin="10,0" Text="Detenido" FontWeight="SemiBold" />
+                        </WrapPanel>
+                        <TextBlock Text="Demora (fin del habla → primer audio en inglés):" Margin="4,6,4,0" FontWeight="SemiBold" />
+                        <TextBlock x:Name="LatencyText" Margin="4,2" Text="Sin mediciones todavía." TextWrapping="Wrap" />
+                        <TextBlock x:Name="OutgoingUsageText" Margin="4,0" Foreground="DimGray" TextWrapping="Wrap" />
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox x:Name="IncomingPanel" Grid.Row="1" Margin="0,6,0,0"
+                          Header="Reunión → mis auriculares (inglés → español)" Padding="4" VerticalAlignment="Top">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="138" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Altavoz de la reunión (salida del cable):" VerticalAlignment="Center" TextWrapping="Wrap" />
+                            <ComboBox x:Name="MeetingOutputCombo" Grid.Column="1" Grid.ColumnSpan="2"
+                                      ToolTip="Extremo de reproducción de OTRO cable (no el de tu micrófono traducido). En Teams, Zoom o Meet elige este dispositivo como altavoz." />
+
+                            <TextBlock Grid.Row="1" Text="Entrada del mismo cable:" VerticalAlignment="Center" />
+                            <ComboBox x:Name="IncomingCaptureCombo" Grid.Row="1" Grid.Column="1"
+                                      ToolTip="Extremo de grabación del mismo cable. Verifícalo con «Comprobar cables»: los nombres pueden estar personalizados." />
+                            <ProgressBar x:Name="IncomingLevelBar" Grid.Row="1" Grid.Column="2" Height="14" Margin="4" Maximum="1" ToolTip="Nivel del audio de la reunión" />
+
+                            <Button x:Name="PairingButton" Grid.Row="2" Content="Comprobar cables" Click="OnCheckCables" Margin="0,2"
+                                    ToolTip="Reproduce tonos breves y verifica por sonido que salida y entrada son el mismo cable y que no se cruza con tu micrófono traducido. Hazlo sin reunión activa." />
+                            <TextBlock x:Name="PairingText" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="4,2" TextWrapping="Wrap" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Row="3" Text="Auriculares (español):" VerticalAlignment="Center" />
+                            <ComboBox x:Name="ListenCombo" Grid.Row="3" Grid.Column="1"
+                                      ToolTip="Usa auriculares: si tu micrófono capta un altavoz, la reunión oiría el español." />
+                            <Slider x:Name="TranslationVolumeSlider" Grid.Row="3" Grid.Column="2" Minimum="0" Maximum="1" Margin="4" VerticalAlignment="Center"
+                                    ValueChanged="OnIncomingVolumeChanged" ToolTip="Volumen de la traducción al español" />
+
+                            <TextBlock Grid.Row="4" Text="Inglés original:" VerticalAlignment="Center" />
+                            <Grid Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" MaxWidth="160" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="OriginalVolumeSlider" Minimum="0" Maximum="1" SmallChange="0.05" LargeChange="0.1"
+                                        VerticalAlignment="Center" ValueChanged="OnIncomingVolumeChanged"
+                                        ToolTip="Volumen del inglés original en tus auriculares (0 = silencio). Valor inicial 20 %." />
+                                <TextBlock x:Name="OriginalVolumeText" Grid.Column="1" MinWidth="36" Margin="4,0" VerticalAlignment="Center" />
+                                <CheckBox x:Name="OriginalMuteCheck" Grid.Column="2" Content="Silenciar" VerticalAlignment="Center" Margin="4,0"
+                                          Checked="OnIncomingOptionChanged" Unchecked="OnIncomingOptionChanged" />
+                            </Grid>
+
+                            <CheckBox x:Name="DuckCheck" Grid.Row="5" Grid.ColumnSpan="3" Margin="0,2"
+                                      Content="Bajar el inglés original mientras suena la traducción"
+                                      Checked="OnIncomingOptionChanged" Unchecked="OnIncomingOptionChanged" />
+
+                            <TextBlock Grid.Row="6" Text="Idioma que se habla:" VerticalAlignment="Center" />
+                            <ComboBox x:Name="IncomingSourceLanguageCombo" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" IsEditable="True"
+                                      ToolTip="Variante de inglés de los demás participantes (código BCP-47)." />
+
+                            <TextBlock Grid.Row="7" Text="Voz en español:" VerticalAlignment="Center" />
+                            <ComboBox x:Name="IncomingVoiceCombo" Grid.Row="7" Grid.Column="1" SelectionChanged="OnIncomingVoiceChanged"
+                                      MaxDropDownHeight="420" IsTextSearchEnabled="True" />
+                            <StackPanel Grid.Row="7" Grid.Column="2" Orientation="Horizontal">
+                                <Button x:Name="IncomingPreviewButton" Content="▶ Probar" Click="OnIncomingPreviewVoice"
+                                        ToolTip="Reproduce una frase en español en tus auriculares. Se factura como síntesis de voz." />
+                                <Button x:Name="IncomingRefreshVoicesButton" Content="↻ Voces" Click="OnIncomingRefreshVoices" ToolTip="Volver a consultar las voces en español"
+                                        AutomationProperties.Name="Actualizar voces en español" />
+                            </StackPanel>
+                            <TextBlock x:Name="IncomingVoiceStatusText" Grid.Row="8" Grid.ColumnSpan="3" Margin="4,2" Foreground="DimGray" TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="9" Grid.ColumnSpan="3" Margin="4" TextWrapping="Wrap" Foreground="DimGray"
+                                       Text="En Teams, Zoom o Meet elige como altavoz la salida del cable indicada arriba. Si cierras el traductor o falla, vuelve a elegir tus auriculares como altavoz en la reunión para seguir oyendo." />
+                        </Grid>
+                        <TextBlock x:Name="IncomingRoutingText" TextWrapping="Wrap" />
+
+                        <WrapPanel Margin="0,2,0,0">
+                            <Button x:Name="IncomingStartButton" Content="▶ Iniciar" Click="OnIncomingStart" FontWeight="Bold" />
+                            <Button x:Name="IncomingStopButton" Content="■ Detener" Click="OnIncomingStop" IsEnabled="False" />
+                            <TextBlock x:Name="IncomingStatusText" VerticalAlignment="Center" Margin="10,0" Text="Detenido" FontWeight="SemiBold" />
+                        </WrapPanel>
+                        <TextBlock Text="Demora (fin del habla → primer audio en español):" Margin="4,6,4,0" FontWeight="SemiBold" />
+                        <TextBlock x:Name="IncomingLatencyText" Margin="4,2" Text="Sin mediciones todavía." TextWrapping="Wrap" />
+                        <TextBlock x:Name="IncomingUsageText" Margin="4,0" Foreground="DimGray" TextWrapping="Wrap" />
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+          </StackPanel>
+        </ScrollViewer>
+
+        <WrapPanel Grid.Row="1" Margin="0,4,0,0">
+            <Button x:Name="StartBothButton" Content="▶ Iniciar ambos" Click="OnStartBoth" />
+            <Button x:Name="StopBothButton" Content="■ Detener ambos" Click="OnStopBoth" />
+            <Button x:Name="RefreshDevicesButton" Content="Actualizar dispositivos" Click="OnRefreshDevices" />
+            <Button Content="Abrir carpeta de datos" Click="OnOpenDataFolder" />
+            <Button Content="Crear accesos directos" Click="OnCreateShortcuts" />
+        </WrapPanel>
+
+        <GroupBox Grid.Row="2" Header="Transcripción ([YO] español → inglés · [REUNIÓN] inglés → español)" Padding="4" Margin="0,4,0,0">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="4,0,4,2">
+                    <TextBlock DockPanel.Dock="Left" Text="Parcial:" Margin="0,0,6,0" FontWeight="SemiBold" />
+                    <ScrollViewer MaxHeight="44" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <TextBlock x:Name="PartialText" TextWrapping="Wrap" Foreground="DimGray" />
+                    </ScrollViewer>
+                </DockPanel>
+                <TextBox x:Name="TranscriptBox" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                         FontFamily="Segoe UI" />
+            </DockPanel>
+        </GroupBox>
+        <TextBlock Grid.Row="3" x:Name="DataPathText" Margin="2,4,2,0" Foreground="DimGray"
+                   TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+    </Grid>
+</Window>
